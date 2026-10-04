@@ -16,8 +16,8 @@ import { AnimatedLaptopWorker } from './AnimatedLaptopWorker';
 export const Sidebar = ({ activeTab, onSelectTab }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: 'opportunities', label: 'Discover Opportunities', icon: <Compass className="w-4 h-4 text-menthe-400" />, badge: 'AI' },
     { id: 'radar', label: 'Company Radar', icon: <Radar className="w-4 h-4 text-lagune-400" />, badge: 'LIVE' },
-    { id: 'opportunities', label: 'Explore Domain', icon: <Compass className="w-4 h-4" /> },
     { id: 'deadlines', label: 'Deadlines', icon: <Clock className="w-4 h-4" /> },
     { id: 'copilot', label: 'AI Copilot', icon: <Sparkles className="w-4 h-4 text-nectarine-400" /> },
     { id: 'saved', label: 'Saved Tracker', icon: <Bookmark className="w-4 h-4" /> },
@@ -27,17 +27,17 @@ export const Sidebar = ({ activeTab, onSelectTab }) => {
   return (
     <aside className="w-64 bg-webbble-dark border-r border-webbble-border flex flex-col justify-between p-4 flex-shrink-0 min-h-screen text-slate-300 select-none shadow-2xl">
       <div className="space-y-6">
-        {/* Brand Header: Webbble from Dribbble Reference */}
+        {/* Brand Header */}
         <div className="flex items-center gap-3 px-3 py-3 border-b border-webbble-border/60">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-lagune-600 via-lagune-500 to-menthe-400 flex items-center justify-center text-white shadow-md shadow-lagune-500/20">
             <Layers className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5">
-              <span>Webbble</span>
+            <h1 className="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5">
+              <span>Academic Agent</span>
             </h1>
-            <p className="text-[10px] text-slate-400 font-medium">
-              Academic Intelligence
+            <p className="text-[10px] text-lagune-400 font-bold uppercase tracking-wider">
+              Opportunity Intelligence
             </p>
           </div>
         </div>

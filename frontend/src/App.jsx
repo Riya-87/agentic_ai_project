@@ -26,6 +26,7 @@ const AppContent = () => {
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [copilotInitialPrompt, setCopilotInitialPrompt] = useState('');
+  const [opportunityInitialSearch, setOpportunityInitialSearch] = useState('');
 
   const handleOpenDetail = (item) => {
     setSelectedOpportunity(item);
@@ -36,6 +37,7 @@ const AppContent = () => {
     setActiveTab(tabId);
     if (params.initialPrompt) {
       setCopilotInitialPrompt(params.initialPrompt);
+      setOpportunityInitialSearch(params.initialPrompt);
     }
   };
 
@@ -65,6 +67,7 @@ const AppContent = () => {
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Navbar
+          activeTab={activeTab}
           onOpenControlRoom={() => handleNavigate('settings')}
           onOpenCopilot={() => handleNavigate('copilot')}
           onNavigate={(tab) => handleNavigate(tab)}
@@ -112,7 +115,10 @@ const AppContent = () => {
           )}
 
           {activeTab === 'opportunities' && (
-            <OpportunitiesPage onOpenDetail={handleOpenDetail} />
+            <OpportunitiesPage
+              onOpenDetail={handleOpenDetail}
+              initialSearch={opportunityInitialSearch}
+            />
           )}
 
           {activeTab === 'deadlines' && (

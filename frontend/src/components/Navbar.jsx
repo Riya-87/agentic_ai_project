@@ -14,16 +14,65 @@ import { useTheme } from '../context/ThemeContext';
 import { useAgent } from '../context/AgentContext';
 import { AgentStatusBadge } from './AgentStatusBadge';
 
-export const Navbar = ({ onOpenCopilot, onNavigate }) => {
+export const Navbar = ({ activeTab = 'dashboard', onOpenCopilot, onNavigate }) => {
   const { user, logout, setAuthModalOpen } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { notifications, unreadCount, markAllNotificationsRead } = useAgent();
   const [notifOpen, setNotifOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  const getPageInfo = () => {
+    switch (activeTab) {
+      case 'opportunities':
+        return {
+          title: 'Discover Opportunities',
+          sub: 'AI Opportunity Discovery Agent with 6-Factor Matching & Conversational Memory'
+        };
+      case 'radar':
+        return {
+          title: 'Company Career Radar',
+          sub: 'Autonomous LangGraph ATS Crawler for Real-Time Openings'
+        };
+      case 'deadlines':
+        return {
+          title: 'Deadlines & Urgency Tracking',
+          sub: 'Temporal Urgency Analysis & Milestone Priority'
+        };
+      case 'copilot':
+        return {
+          title: 'AI Academic Copilot',
+          sub: 'Grounded Student Advisor with Profile Alignment'
+        };
+      case 'saved':
+        return {
+          title: 'Application Tracker',
+          sub: '6-Stage Lifecycle Tracking: Saved, Applied, Interview, Selected'
+        };
+      case 'profile':
+        return {
+          title: 'Student Profile & Resume Intelligence',
+          sub: 'Comprehensive Competencies, Projects, and 6-Factor Compatibility'
+        };
+      case 'settings':
+      case 'agents':
+        return {
+          title: 'Multi-Agent Control Room',
+          sub: 'Autonomous Orchestrator, Live Telemetry & Pipeline Execution'
+        };
+      case 'dashboard':
+      default:
+        return {
+          title: 'Academic Intelligence Dashboard',
+          sub: 'AI-Powered Career & Academic Opportunity Discovery'
+        };
+    }
+  };
+
+  const pageInfo = getPageInfo();
+
   return (
     <header className="sticky top-0 z-30 h-16 w-full border-b border-canvas-border dark:border-webbble-border bg-white/95 dark:bg-webbble-dark/95 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between transition-colors">
-      {/* Page Title from Dribbble Reference */}
+      {/* Page Title */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2.5 md:hidden">
           <div className="w-8 h-8 rounded-xl bg-lagune-600 flex items-center justify-center text-white shadow-sm">
@@ -33,10 +82,10 @@ export const Navbar = ({ onOpenCopilot, onNavigate }) => {
 
         <div>
           <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-            Explore Domain
+            {pageInfo.title}
           </h2>
           <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-            Discover verified scholarships, internships & hackathons
+            {pageInfo.sub}
           </p>
         </div>
       </div>

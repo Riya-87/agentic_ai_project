@@ -24,7 +24,7 @@ import { OpportunityCard } from '../components/OpportunityCard';
 import { OpportunityAgentPanel } from '../components/OpportunityAgentPanel';
 import { ResumeUploadModal } from '../components/ResumeUploadModal';
 
-export const OpportunitiesPage = ({ onOpenDetail }) => {
+export const OpportunitiesPage = ({ onOpenDetail, initialSearch = '' }) => {
   const { user } = useAuth();
   const { showToast } = useAgent();
 
@@ -32,7 +32,7 @@ export const OpportunitiesPage = ({ onOpenDetail }) => {
   const [loading, setLoading] = useState(true);
 
   // Search & Filter State
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(initialSearch || '');
   const [category, setCategory] = useState('All');
   const [mode, setMode] = useState('Any');
   const [isFree, setIsFree] = useState(false);

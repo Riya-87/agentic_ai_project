@@ -99,12 +99,31 @@ export const DashboardPage = ({ onNavigate, onOpenDetail }) => {
       {/* Sharon Ahmed Panoramic Alpine Hero Banner with Embedded Search */}
       <DashboardHero onSearch={handleHeroSearch} />
 
-      {/* 4x2 Grid of 8 Domain Contour Cards (Exact from Sharon Ahmed's shot) */}
+      {/* Top 6-Factor Matched Opportunities Grid */}
       <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-lagune-500" />
+              <span>Recommended for You (6-Factor AI Match)</span>
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Evaluated across Skills (35%), Education (20%), Experience (15%), Location (10%), Interests (10%), and Eligibility (10%)
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate && onNavigate('opportunities')}
+            className="text-xs font-bold text-lagune-600 dark:text-lagune-400 hover:underline flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>View All Opportunities</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-3">
             <RefreshCw className="w-8 h-8 text-lagune-500 animate-spin" />
-            <p className="text-xs text-slate-400 font-medium">Loading domain cards...</p>
+            <p className="text-xs text-slate-400 font-medium">Evaluating 6-Factor compatibility...</p>
           </div>
         ) : topMatches.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-6 bg-white dark:bg-webbble-card border border-canvas-border dark:border-webbble-border rounded-[28px] text-center space-y-4 shadow-sm">

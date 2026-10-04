@@ -1,52 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Sparkles, ArrowRight, Globe, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Sparkles, ArrowRight, Bot, Compass, Flame } from 'lucide-react';
 
 export const DashboardHero = ({ onSearch, onSelectCategory }) => {
   const [query, setQuery] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
-  // Exact domain suggestions from Sharon Ahmed's shot
-  const domainSuggestions = [
-    { name: 'orelloo.net', ext: '.net' },
-    { name: 'orelloo.com', ext: '.com', isSelected: true },
-    { name: 'orelloo.to', ext: '.to' },
-    { name: 'orelloo.us', ext: '.us' },
-    { name: 'orelloo.sg', ext: '.sg' },
-    { name: 'orelloo.shop', ext: '.shop' },
-    { name: 'orelloo.site', ext: '.site' },
+  const opportunitySuggestions = [
+    { label: 'Machine Learning Internships', query: 'Machine Learning' },
+    { label: 'Remote Software Internships', query: 'Remote Summer Software Internships' },
+    { label: 'AI & Web3 Hackathons', query: 'AI Hackathons' },
+    { label: 'Undergrad Research Fellowships', query: 'Undergraduate Research Fellowships' },
+    { label: 'Google & Open Source Programs', query: 'Google Summer of Code' },
   ];
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelectSuggestion = (suggestion) => {
-    setQuery(suggestion.name);
-    setIsDropdownOpen(false);
-    if (onSearch) {
-      onSearch(suggestion.name);
-    }
-  };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setIsDropdownOpen(false);
-    if (onSearch) {
-      onSearch(query);
+    if (onSearch && query.trim()) {
+      onSearch(query.trim());
     }
   };
 
   return (
     <div className="relative rounded-[32px] overflow-hidden shadow-2xl border border-canvas-border dark:border-webbble-border">
-      {/* Panoramic Alpine Mountain Landscape Banner from Sharon Ahmed Reference */}
-      <div className="relative h-64 sm:h-72 w-full overflow-hidden hero-alpine-gradient">
+      {/* Panoramic Alpine Mountain Landscape Banner with Modern Contrast */}
+      <div className="relative min-h-[280px] sm:min-h-[300px] w-full overflow-hidden hero-alpine-gradient flex flex-col justify-center">
         {/* Mountain Silhouette Layers SVG */}
         <div className="absolute inset-0 opacity-90 mix-blend-soft-light pointer-events-none">
           <svg className="w-full h-full object-cover" preserveAspectRatio="none" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,56 +37,59 @@ export const DashboardHero = ({ onSearch, onSelectCategory }) => {
         <div className="absolute bottom-0 left-1/3 w-80 h-32 bg-menthe-300/20 rounded-full blur-2xl pointer-events-none" />
 
         {/* Content Container */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-8 text-center space-y-4">
-          <div className="space-y-1 max-w-2xl">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
-              Get your business online .com domain from SG$8.01 (1st year).
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-8 text-center space-y-4 py-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] font-bold shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-lagune-200" />
+            <span>AI Academic & Career Opportunity Discovery Agent</span>
+          </div>
+
+          <div className="space-y-1.5 max-w-3xl">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
+              Discover Dream Internships, Research & Hackathons.
             </h1>
-            <p className="text-xs sm:text-sm text-lagune-100/90 font-medium drop-shadow">
-              As low as SG$8.01/1st year.
+            <p className="text-xs sm:text-sm text-lagune-100/90 font-medium drop-shadow max-w-xl mx-auto">
+              Autonomous multi-source research agent evaluating eligibility, deadlines, and 6-factor profile compatibility.
             </p>
           </div>
 
           {/* Centered Floating Search Input Container */}
-          <div ref={dropdownRef} className="relative w-full max-w-lg">
-            <form onSubmit={handleFormSubmit} className="relative">
+          <div className="w-full max-w-xl">
+            <form onSubmit={handleFormSubmit} className="relative shadow-2xl rounded-2xl">
               <input
                 type="text"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setIsDropdownOpen(true);
-                }}
-                onFocus={() => setIsDropdownOpen(true)}
-                placeholder="orelloo.com"
-                className="w-full pl-6 pr-12 py-3.5 rounded-2xl bg-white text-slate-900 text-xs sm:text-sm font-semibold placeholder:text-slate-400 shadow-2xl focus:outline-none focus:ring-4 focus:ring-lagune-400/40 transition-all border border-white/60"
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder='Try searching "Machine Learning", "Remote Software Internships", "AI Hackathons"...'
+                className="w-full pl-5 pr-28 py-4 rounded-2xl bg-white text-slate-900 text-xs sm:text-sm font-semibold placeholder:text-slate-400 shadow-2xl focus:outline-none focus:ring-4 focus:ring-lagune-400/40 transition-all border border-white/80"
               />
               <button
                 type="submit"
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-lagune-600 transition-colors p-1"
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-3.5 h-3.5" />
+                <span>Discover</span>
               </button>
             </form>
 
-            {/* Dribbble Style Floating Autocomplete Dropdown - Exact from Sharon Ahmed's shot */}
-            {isDropdownOpen && (
-              <div className="absolute left-0 w-44 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-50 text-left animate-fade-in">
-                {domainSuggestions.map((item) => (
-                  <button
-                    key={item.name}
-                    onClick={() => handleSelectSuggestion(item)}
-                    className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold transition-all ${
-                      item.isSelected
-                        ? 'bg-[#DFF1FA] text-[#165882] font-bold'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{item.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Quick Suggestion Chips */}
+            <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+              <span className="text-[11px] text-white/80 font-bold flex items-center gap-1">
+                <Flame className="w-3.5 h-3.5 text-peche-300" /> Hot:
+              </span>
+              {opportunitySuggestions.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setQuery(item.query);
+                    if (onSearch) onSearch(item.query);
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-black/25 hover:bg-black/40 backdrop-blur-md text-white/95 text-[11px] font-semibold border border-white/20 transition-all hover:scale-105 active:scale-95"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
