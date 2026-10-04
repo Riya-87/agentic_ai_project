@@ -1,29 +1,27 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  BarChart2,
-  Globe2,
+  Radar,
   Compass,
-  Code2,
-  Server,
+  Clock,
+  Sparkles,
+  Bookmark,
   Activity,
   History,
   Layers,
-  Sparkles
+  Settings
 } from 'lucide-react';
 import { AnimatedLaptopWorker } from './AnimatedLaptopWorker';
 
 export const Sidebar = ({ activeTab, onSelectTab }) => {
-  // Navigation items matching Sharon Ahmed's Webbble shot
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'analytics', label: 'Analytics', icon: <BarChart2 className="w-4 h-4" /> },
-    { id: 'sites', label: 'Sites', icon: <Globe2 className="w-4 h-4" /> },
-    { id: 'opportunities', label: 'Explore Domain', icon: <Compass className="w-4 h-4" />, isPrimary: true },
-    { id: 'builder', label: 'Website Builder', icon: <Code2 className="w-4 h-4" /> },
-    { id: 'services', label: 'Manage Service', icon: <Server className="w-4 h-4" /> },
-    { id: 'monitoring', label: 'Monitoring', icon: <Activity className="w-4 h-4" /> },
-    { id: 'activity', label: 'Activity Log', icon: <History className="w-4 h-4" /> },
+    { id: 'radar', label: 'Company Radar', icon: <Radar className="w-4 h-4 text-lagune-400" />, badge: 'LIVE' },
+    { id: 'opportunities', label: 'Explore Domain', icon: <Compass className="w-4 h-4" /> },
+    { id: 'deadlines', label: 'Deadlines', icon: <Clock className="w-4 h-4" /> },
+    { id: 'copilot', label: 'AI Copilot', icon: <Sparkles className="w-4 h-4 text-nectarine-400" /> },
+    { id: 'saved', label: 'Saved Tracker', icon: <Bookmark className="w-4 h-4" /> },
+    { id: 'settings', label: 'Agent Room', icon: <Activity className="w-4 h-4" /> },
   ];
 
   return (
@@ -47,11 +45,11 @@ export const Sidebar = ({ activeTab, onSelectTab }) => {
         {/* Navigation List - Sharon Ahmed Active State with White Dot */}
         <nav className="space-y-1">
           {navItems.map((item) => {
-            const isActive = activeTab === item.id || (item.isPrimary && (activeTab === 'opportunities' || activeTab === 'dashboard'));
+            const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
-                onClick={() => onSelectTab(item.id === 'opportunities' || item.id === 'dashboard' ? item.id : 'opportunities')}
+                onClick={() => onSelectTab(item.id)}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
                   isActive
                     ? 'bg-webbble-card text-white shadow-sm border border-slate-700/60'
@@ -63,6 +61,11 @@ export const Sidebar = ({ activeTab, onSelectTab }) => {
                     {item.icon}
                   </span>
                   <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-lagune-500/20 text-lagune-400 font-extrabold border border-lagune-500/30">
+                      {item.badge}
+                    </span>
+                  )}
                 </div>
 
                 {/* White Dot Indicator on Selected Item */}

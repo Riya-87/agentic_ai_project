@@ -232,6 +232,18 @@ class ApiService {
   async getDashboardAnalytics() {
     return await this.request('/analytics/dashboard');
   }
+
+  // Company Career Radar (LangGraph Autonomous Crawler)
+  async crawlCompanyCareer(companyName, categoryFilter = 'All', studentProfile = null) {
+    return await this.request('/opportunities/company-crawl', {
+      method: 'POST',
+      body: JSON.stringify({
+        company_name: companyName,
+        category_filter: categoryFilter,
+        student_profile: studentProfile,
+      }),
+    });
+  }
 }
 
 export const api = new ApiService();

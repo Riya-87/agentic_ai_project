@@ -7,6 +7,7 @@ import { Sidebar } from './components/Sidebar';
 import { Toast } from './components/Toast';
 import { OpportunityDetailModal } from './components/OpportunityDetailModal';
 import { DashboardPage } from './pages/DashboardPage';
+import { CompanyRadarPage } from './pages/CompanyRadarPage';
 import { OpportunitiesPage } from './pages/OpportunitiesPage';
 import { DeadlinesPage } from './pages/DeadlinesPage';
 import { CopilotPage } from './pages/CopilotPage';
@@ -73,6 +74,7 @@ const AppContent = () => {
         <div className="flex md:hidden items-center gap-1.5 p-2 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 overflow-x-auto">
           {[
             { id: 'dashboard', label: 'Dashboard' },
+            { id: 'radar', label: 'Radar' },
             { id: 'opportunities', label: 'Discover' },
             { id: 'deadlines', label: 'Deadlines' },
             { id: 'copilot', label: 'Copilot' },
@@ -99,6 +101,13 @@ const AppContent = () => {
             <DashboardPage
               onNavigate={(tab, params) => handleNavigate(tab, params)}
               onOpenDetail={handleOpenDetail}
+            />
+          )}
+
+          {activeTab === 'radar' && (
+            <CompanyRadarPage
+              onOpenDetail={handleOpenDetail}
+              onNavigate={(tab, params) => handleNavigate(tab, params)}
             />
           )}
 

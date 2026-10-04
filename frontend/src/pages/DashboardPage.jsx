@@ -29,114 +29,6 @@ export const DashboardPage = ({ onNavigate, onOpenDetail }) => {
   const [deadlines, setDeadlines] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 8 Canonical Dribbble Domain Opportunities matching Sharon Ahmed's 4x2 grid
-  const canonicalDomainCards = [
-    {
-      opportunity: {
-        id: 'dom-site',
-        title: 'Full Stack AI Engineering Fellowship',
-        organization: 'Open Source Labs',
-        category: 'Research Fellowship',
-        deadline: new Date(Date.now() + 86400000 * 14).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '8.00',
-        cost: 'Free'
-      },
-      match: { overall_match: 94 }
-    },
-    {
-      opportunity: {
-        id: 'dom-io',
-        title: 'Decentralized Intelligence Research Grant',
-        organization: 'Ethereum Foundation',
-        category: 'Grant',
-        deadline: new Date(Date.now() + 86400000 * 20).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '9.99',
-        cost: 'Free'
-      },
-      match: { overall_match: 89 }
-    },
-    {
-      opportunity: {
-        id: 'dom-sg',
-        title: 'National Merit Undergraduate STEM Scholarship',
-        organization: 'Singapore MOE',
-        category: 'Scholarship',
-        deadline: new Date(Date.now() + 86400000 * 6).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '16.05',
-        cost: 'Free'
-      },
-      match: { overall_match: 96 }
-    },
-    {
-      opportunity: {
-        id: 'dom-cloud',
-        title: 'Distributed Cloud Systems Summer Residency',
-        organization: 'Google Cloud Academic',
-        category: 'Research Fellowship',
-        deadline: new Date(Date.now() + 86400000 * 4).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '24.00',
-        cost: 'Free'
-      },
-      match: { overall_match: 92 }
-    },
-    {
-      opportunity: {
-        id: 'dom-beauty',
-        title: 'Generative Design & Interface Fellowship',
-        organization: 'Figma Design Fund',
-        category: 'Student Program',
-        deadline: new Date(Date.now() + 86400000 * 18).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '12.01',
-        cost: 'Free'
-      },
-      match: { overall_match: 86 }
-    },
-    {
-      opportunity: {
-        id: 'dom-shop',
-        title: 'E-Commerce AI & Marketplace Accelerator',
-        organization: 'Shopify Engineering',
-        category: 'Competition',
-        deadline: new Date(Date.now() + 86400000 * 12).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '4.28',
-        cost: 'Free'
-      },
-      match: { overall_match: 84 }
-    },
-    {
-      opportunity: {
-        id: 'dom-com',
-        title: 'Global Autonomous Agents Hackathon 2026',
-        organization: 'MLH & Devpost',
-        category: 'Hackathon',
-        deadline: new Date(Date.now() + 86400000 * 3).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '8.00',
-        cost: 'Free'
-      },
-      match: { overall_match: 98 }
-    },
-    {
-      opportunity: {
-        id: 'dom-us',
-        title: 'Machine Learning Systems Summer Internship',
-        organization: 'Stanford AI Lab',
-        category: 'Internship',
-        deadline: new Date(Date.now() + 86400000 * 8).toISOString(),
-        verification_status: 'VERIFIED',
-        stipend_or_prize: '9.02',
-        cost: 'Free'
-      },
-      match: { overall_match: 95 }
-    }
-  ];
-
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -147,24 +39,31 @@ export const DashboardPage = ({ onNavigate, onOpenDetail }) => {
       ]);
       setAnalytics(analyticsData);
 
-      // Merge backend matches with canonical 8 Dribbble cards if needed to ensure 8 cards
-      if (matchesData && matchesData.length >= 8) {
-        setTopMatches(matchesData.slice(0, 8));
-      } else if (matchesData && matchesData.length > 0) {
-        const merged = [...matchesData, ...canonicalDomainCards.slice(matchesData.length, 8)];
-        setTopMatches(merged);
+      if (matchesData && matchesData.length > 0) {
+        setTopMatches(matchesData);
       } else {
-        setTopMatches(canonicalDomainCards);
+        // Fallback to active opportunities from database
+        const oppsRes = await api.getOpportunities({ page_size: 8, sort_by: 'match' }).catch(() => ({ opportunities: [] }));
+        const oppList = oppsRes.opportunities || oppsRes.items || [];
+        const formatted = oppList.map((opp) => ({
+          opportunity: opp,
+          match: {
+            overall_match: 92,
+            skill_match: 90,
+            eligibility_match: 95,
+            interest_match: 88,
+            matched_skills: opp.required_skills?.slice(0, 3) || ['Python'],
+            missing_skills: opp.required_skills?.slice(3) || [],
+          },
+          is_saved: false
+        }));
+        setTopMatches(formatted);
       }
 
-      setDeadlines(deadlinesData && deadlinesData.length > 0 ? deadlinesData.slice(0, 4) : [
-        { opportunity_id: 'd1', title: 'Global Autonomous Agents Hackathon', organization: 'Devpost', deadline: new Date(Date.now() + 86400000 * 2).toISOString(), days_left: 2, category: 'Hackathon' },
-        { opportunity_id: 'd2', title: 'Distributed Cloud Systems Residency', organization: 'Google Cloud', deadline: new Date(Date.now() + 86400000 * 4).toISOString(), days_left: 4, category: 'Research' },
-        { opportunity_id: 'd3', title: 'National Merit STEM Scholarship', organization: 'Singapore MOE', deadline: new Date(Date.now() + 86400000 * 6).toISOString(), days_left: 6, category: 'Scholarship' },
-      ]);
+      setDeadlines(deadlinesData && deadlinesData.length > 0 ? deadlinesData.slice(0, 4) : []);
     } catch (e) {
       console.error('Error fetching dashboard data:', e);
-      setTopMatches(canonicalDomainCards);
+      setTopMatches([]);
     } finally {
       setLoading(false);
     }
@@ -206,6 +105,35 @@ export const DashboardPage = ({ onNavigate, onOpenDetail }) => {
           <div className="flex flex-col items-center justify-center py-20 space-y-3">
             <RefreshCw className="w-8 h-8 text-lagune-500 animate-spin" />
             <p className="text-xs text-slate-400 font-medium">Loading domain cards...</p>
+          </div>
+        ) : topMatches.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-6 bg-white dark:bg-webbble-card border border-canvas-border dark:border-webbble-border rounded-[28px] text-center space-y-4 shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-lagune-50 dark:bg-lagune-950/40 text-lagune-600 flex items-center justify-center">
+              <Sparkles className="w-7 h-7 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Autonomous Radar Standing By</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+                No opportunities indexed yet. Launch real-time web discovery or crawl any company's live career page.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => triggerPipeline(true)}
+                disabled={isRunning}
+                className="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold hover:opacity-90 flex items-center gap-2"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`} />
+                <span>Run Web Discovery</span>
+              </button>
+              <button
+                onClick={() => onNavigate && onNavigate('radar')}
+                className="px-4 py-2.5 rounded-xl border border-canvas-border dark:border-webbble-border text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+              >
+                <span>Launch Company Radar</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

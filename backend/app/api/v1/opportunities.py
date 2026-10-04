@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -12,9 +13,12 @@ from app.models.profile import StudentProfile
 from app.models.opportunity import Opportunity
 from app.models.match import UserMatch
 from app.models.saved_opportunity import SavedOpportunity
-from app.schemas.opportunity import OpportunityOut, OpportunityCreate
+from app.schemas.opportunity import OpportunityOut, OpportunityCreate, CompanyCrawlRequest, CompanyCrawlResponse
 from app.schemas.match import MatchedOpportunityOut, MatchingBreakdown, MatchReason
 from app.agents.base import BaseAgent
+from app.agents.company_career_graph import company_career_radar
+
+logger = logging.getLogger("api.opportunities")
 
 router = APIRouter(prefix="/opportunities", tags=["Opportunities"])
 
@@ -392,3 +396,133 @@ def create_custom_opportunity(
     db.commit()
     db.refresh(opp)
     return OpportunityOut.model_validate(opp)
+
+
+@router.post("/company-crawl", response_model=CompanyCrawlResponse)
+def crawl_company_career_openings(
+    req: CompanyCrawlRequest,
+    current_user: Optional[User] = Depends(get_optional_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    LangGraph-powered Autonomous Career Page Crawler.
+    Crawls official company career portals and ATS platforms (Greenhouse, Lever, Ashby, custom) in real time.
+    Calculates Start Dates, Deadlines, 6D Compatibility match, and Skill-Gap Autopsies.
+    """
+    company_name = req.company_name.strip()
+    if not company_name:
+        raise HTTPException(status_code=400, detail="Company name is required.")
+        
+    # Build student profile dictionary
+    profile_dict = req.student_profile or {}
+    if not profile_dict and current_user:
+        profile_obj = db.query(StudentProfile).filter(StudentProfile.user_id == current_user.id).first()
+        if profile_obj:
+            profile_dict = {
+                "name": current_user.full_name or "Student",
+                "degree": profile_obj.degree or "Bachelor of Technology",
+                "major": profile_obj.branch or "Computer Science",
+                "skills": profile_obj.skills or ["Python", "React", "AI/ML", "SQL"],
+                "interests": profile_obj.interests or ["Software Engineering", "AI/ML"],
+                "graduation_year": profile_obj.graduation_year or 2026,
+                "academic_year": profile_obj.academic_year or "3rd Year"
+            }
+            
+    if not profile_dict:
+        profile_dict = {
+            "name": "Student Candidate",
+            "degree": "B.Tech Computer Science",
+            "major": "Computer Science",
+            "skills": ["Python", "JavaScript", "React", "Machine Learning", "FastAPI", "SQL", "Git"],
+            "interests": ["Software Engineering", "AI/ML", "Web Development"],
+            "graduation_year": 2026,
+            "academic_year": "3rd Year"
+        }
+        
+    category_filter = req.category_filter if req.category_filter and req.category_filter != "All" else None
+    
+    # Run the LangGraph career radar engine
+    result = company_career_radar.run_company_radar(
+        company_query=company_name,
+        student_profile=profile_dict,
+        category_filter=category_filter
+    )
+    
+    # Persist or update newly discovered active openings into the database
+    openings = result.get("openings", [])
+    now = datetime.utcnow()
+    for item in openings[:25]:
+        try:
+            off_url = item.get("official_url") or item.get("source_url") or ""
+            if not off_url:
+                continue
+            existing = db.query(Opportunity).filter(Opportunity.official_url == off_url).first()
+            
+            s_dt = None
+            if item.get("start_date_iso"):
+                try:
+                    s_dt = datetime.fromisoformat(item["start_date_iso"].replace("Z", "+00:00"))
+                except Exception:
+                    pass
+            d_dt = None
+            if item.get("deadline_iso"):
+                try:
+                    d_dt = datetime.fromisoformat(item["deadline_iso"].replace("Z", "+00:00"))
+                except Exception:
+                    pass
+            elif not d_dt:
+                d_dt = now + timedelta(days=45)
+                
+            if not existing:
+                new_opp = Opportunity(
+                    title=item.get("title") or f"{company_name} Opening",
+                    organization=item.get("organization") or company_name,
+                    description=item.get("description") or f"Direct opening discovered via {result.get('ats_detected', 'career portal')}",
+                    summary=item.get("summary") or f"{item.get('title')} at {item.get('organization')}",
+                    category=item.get("category") or "Internship",
+                    eligibility=item.get("eligibility") or "Students and recent graduates",
+                    deadline=d_dt,
+                    start_date=s_dt,
+                    location=item.get("location") or "Global / Remote",
+                    mode=item.get("mode") or "Hybrid",
+                    cost="Free",
+                    is_free=True,
+                    stipend_or_prize=item.get("stipend_or_prize") or "Competitive compensation",
+                    required_skills=item.get("required_skills") or [],
+                    preferred_skills=item.get("preferred_skills") or [],
+                    tags=item.get("tags") or [company_name, "Career Portal", "Live Verified"],
+                    official_url=off_url,
+                    source_name=f"{company_name} Official Portal ({result.get('ats_detected', 'ATS')})",
+                    source_url=result.get("career_portal_url") or off_url,
+                    source_type="official_portal",
+                    verification_status="VERIFIED",
+                    is_live=True,
+                    is_demo=False,
+                    status="active",
+                    first_discovered_at=now,
+                    last_checked_at=now,
+                    last_verified_at=now
+                )
+                db.add(new_opp)
+            else:
+                existing.last_checked_at = now
+                existing.last_verified_at = now
+                existing.status = "active"
+                existing.is_live = True
+        except Exception as e:
+            logger.warning(f"Error persisting company opening: {e}")
+            
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        
+    return CompanyCrawlResponse(
+        company_name=result.get("company_name", company_name),
+        ats_detected=result.get("ats_detected"),
+        career_portal_url=result.get("career_portal_url"),
+        total_openings_found=result.get("total_openings_found", 0),
+        openings=result.get("openings", []),
+        telemetry=result.get("telemetry", {}),
+        errors=result.get("errors", [])
+    )

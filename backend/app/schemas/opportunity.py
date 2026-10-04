@@ -84,3 +84,17 @@ class OpportunityFilter(BaseModel):
     sort_by: Optional[str] = "match"  # "match", "deadline", "created", "popularity", "verification"
     page: int = 1
     page_size: int = 50
+
+class CompanyCrawlRequest(BaseModel):
+    company_name: str
+    category_filter: Optional[str] = "All"
+    student_profile: Optional[Dict[str, Any]] = None
+
+class CompanyCrawlResponse(BaseModel):
+    company_name: str
+    ats_detected: Optional[str] = None
+    career_portal_url: Optional[str] = None
+    total_openings_found: int = 0
+    openings: List[Dict[str, Any]] = []
+    telemetry: Dict[str, Any] = {}
+    errors: List[str] = []
