@@ -21,9 +21,6 @@ try:
     Base.metadata.create_all(bind=engine)
     _db = SessionLocal()
     seed_database(_db)
-    _demo_user = _db.query(User).filter(User.email == "alex.chen@university.edu").first()
-    if _demo_user:
-        orchestrator.match_single_student(_db, _demo_user.id)
     _db.close()
 except Exception as _e:
     logger.warning(f"Initial startup DB init warning: {_e}")
@@ -35,9 +32,11 @@ async def lifespan(app: FastAPI):
         Base.metadata.create_all(bind=engine)
         db = SessionLocal()
         seed_database(db)
-        demo_user = db.query(User).filter(User.email == "alex.chen@university.edu").first()
-        if demo_user:
-            orchestrator.match_single_student(db, demo_user.id)
+        from app.models.match import UserMatch
+        if db.query(UserMatch).count() == 0:
+            demo_user = db.query(User).filter(User.email == "alex.chen@university.edu").first()
+            if demo_user:
+                orchestrator.match_single_student(db, demo_user.id)
         db.close()
     except Exception as e:
         logger.error(f"Error during startup seeding: {e}", exc_info=True)

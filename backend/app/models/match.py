@@ -12,8 +12,12 @@ class UserMatch(Base):
     
     overall_match = Column(Float, default=0.0)  # e.g., 91.0 (%)
     skill_match = Column(Float, default=0.0)    # e.g., 95.0 (%)
-    eligibility_match = Column(Float, default=0.0) # e.g., 100.0 (%)
+    education_match = Column(Float, default=0.0) # e.g., 85.0 (%)
+    experience_match = Column(Float, default=0.0) # e.g., 75.0 (%)
+    location_match = Column(Float, default=0.0) # e.g., 90.0 (%)
     interest_match = Column(Float, default=0.0) # e.g., 90.0 (%)
+    eligibility_match = Column(Float, default=0.0) # e.g., 100.0 (%)
+    eligibility_status = Column(String(50), default="likely eligible") # "eligible", "likely eligible", "eligibility unclear", "not eligible"
     deadline_urgency = Column(Float, default=0.0) # e.g., 80.0 (%)
     
     matched_skills = Column(JSON, default=list)  # ["Python", "React"]

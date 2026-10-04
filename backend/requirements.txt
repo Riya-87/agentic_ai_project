@@ -20,3 +20,4 @@ email-validator>=2.1.0
 langgraph>=0.0.26
 langchain-core>=0.1.33
 groq>=0.11.0
+pypdf>=5.0.0

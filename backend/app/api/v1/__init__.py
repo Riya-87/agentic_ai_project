@@ -9,6 +9,8 @@ from app.api.v1.notifications import router as notifications_router
 from app.api.v1.agents import router as agents_router
 from app.api.v1.assistant import router as assistant_router
 from app.api.v1.analytics import router as analytics_router
+from app.api.v1.resume import router as resume_router
+from app.api.v1.agent import router as agent_router
 
 api_router = APIRouter()
 
@@ -22,3 +24,5 @@ api_router.include_router(notifications_router)
 api_router.include_router(agents_router)
 api_router.include_router(assistant_router)
 api_router.include_router(analytics_router)
+api_router.include_router(resume_router)
+api_router.include_router(agent_router)

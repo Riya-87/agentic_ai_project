@@ -165,37 +165,61 @@ export const OpportunityDetailModal = ({
                 </div>
               )}
 
-              {/* Dimensional Metrics Progress */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2">
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Skill Fit</p>
-                  <p className="text-base font-extrabold text-brand-600 dark:text-brand-400">
-                    {Math.round(match?.skill_match || 0)}%
-                  </p>
+              {/* 6-Factor Compatibility Grid */}
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    6-Factor AI Compatibility Breakdown
+                  </span>
+                  {match?.eligibility_status && (
+                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase border ${
+                      match.eligibility_status.includes('not')
+                        ? 'bg-rose-500/10 text-rose-600 border-rose-500/20'
+                        : match.eligibility_status.includes('unclear')
+                        ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                        : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                    }`}>
+                      {match.eligibility_status}
+                    </span>
+                  )}
                 </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Eligibility</p>
-                  <p className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
-                    {Math.round(match?.eligibility_match || 0)}%
-                  </p>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Interests</p>
-                  <p className="text-base font-extrabold text-purple-600 dark:text-purple-400">
-                    {Math.round(match?.interest_match || 0)}%
-                  </p>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Academic Year</p>
-                  <p className="text-base font-extrabold text-indigo-600 dark:text-indigo-400">
-                    {Math.round(match?.academic_year_match || 100)}%
-                  </p>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Deadline Score</p>
-                  <p className="text-base font-extrabold text-amber-600 dark:text-amber-400">
-                    {Math.round(match?.deadline_urgency || 0)}%
-                  </p>
+                <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Skills (35%)</p>
+                    <p className="text-sm font-extrabold text-brand-600 dark:text-brand-400">
+                      {Math.round(match?.skill_match || 80)}%
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Edu (20%)</p>
+                    <p className="text-sm font-extrabold text-blue-600 dark:text-blue-400">
+                      {Math.round(match?.education_match || 85)}%
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Exp (15%)</p>
+                    <p className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
+                      {Math.round(match?.experience_match || 75)}%
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Loc (10%)</p>
+                    <p className="text-sm font-extrabold text-cyan-600 dark:text-cyan-400">
+                      {Math.round(match?.location_match || 90)}%
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Interest (10%)</p>
+                    <p className="text-sm font-extrabold text-purple-600 dark:text-purple-400">
+                      {Math.round(match?.interest_match || 80)}%
+                    </p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Elig (10%)</p>
+                    <p className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
+                      {Math.round(match?.eligibility_match || 85)}%
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -346,22 +370,32 @@ export const OpportunityDetailModal = ({
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 flex flex-wrap items-center justify-between gap-4">
           {/* Tracking Status Pills */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">My Status:</span>
-            {['saved', 'in_progress', 'applied'].map((st) => (
-              <button
-                key={st}
-                type="button"
-                onClick={() => handleStatusChange(currentStatus === st ? '' : st)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all border ${
-                  currentStatus === st
-                    ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-brand-500'
-                }`}
-              >
-                {st === 'in_progress' ? 'In Progress' : st}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-semibold text-slate-500 mr-1">Lifecycle:</span>
+            {[
+              { id: 'SAVED', label: 'Saved' },
+              { id: 'INTERESTED', label: 'Interested' },
+              { id: 'APPLIED', label: 'Applied' },
+              { id: 'INTERVIEW', label: 'Interview' },
+              { id: 'SELECTED', label: 'Selected' },
+              { id: 'REJECTED', label: 'Archived' }
+            ].map((st) => {
+              const active = (currentStatus || '').toUpperCase() === st.id;
+              return (
+                <button
+                  key={st.id}
+                  type="button"
+                  onClick={() => handleStatusChange(active ? '' : st.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${
+                    active
+                      ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-transparent shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                  }`}
+                >
+                  {st.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Official Apply Link Button */}

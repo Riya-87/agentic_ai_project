@@ -117,11 +117,18 @@ export const OpportunityCard = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-1.5 flex-wrap justify-end" onClick={(e) => e.stopPropagation()}>
             {match && (
-              <span className="px-2.5 py-1 rounded-full bg-white/30 backdrop-blur-md text-slate-900 text-[11px] font-bold shadow-sm border border-white/30">
-                {match.overall_match || 88}% Match
-              </span>
+              <>
+                <span className="px-2.5 py-1 rounded-full bg-white/30 backdrop-blur-md text-slate-900 text-[11px] font-extrabold shadow-sm border border-white/30">
+                  {Math.round(match.overall_match || 88)}% Match
+                </span>
+                {match.eligibility_status && (
+                  <span className="px-2 py-0.5 rounded-full bg-black/10 backdrop-blur-md text-slate-900 text-[9px] font-bold uppercase tracking-wider">
+                    {match.eligibility_status}
+                  </span>
+                )}
+              </>
             )}
             <button
               type="button"

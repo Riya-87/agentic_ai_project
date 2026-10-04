@@ -244,6 +244,67 @@ class ApiService {
       }),
     });
   }
+
+  // Conversational Opportunity Agent
+  async agentChat(message, sessionId = null) {
+    return await this.request('/agent/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, session_id: sessionId }),
+    });
+  }
+
+  async agentCompare(opportunityIds) {
+    return await this.request('/agent/compare', {
+      method: 'POST',
+      body: JSON.stringify({ opportunity_ids: opportunityIds }),
+    });
+  }
+
+  async agentExplain(opportunityId) {
+    return await this.request('/agent/explain', {
+      method: 'POST',
+      body: JSON.stringify({ opportunity_id: opportunityId }),
+    });
+  }
+
+  async agentResetSession(sessionId) {
+    return await this.request(`/agent/reset-session?session_id=${sessionId}`, {
+      method: 'POST',
+    });
+  }
+
+  // Resume Analyzer
+  async uploadResume(file) {
+    const url = `${BASE_URL}/resume/upload`;
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = {};
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Resume upload failed');
+    }
+    return await response.json();
+  }
+
+  async parseResumeText(text, applyToProfile = true) {
+    return await this.request('/resume/parse-text', {
+      method: 'POST',
+      body: JSON.stringify({ text, apply_to_profile: applyToProfile }),
+    });
+  }
+
+  async getResumeStatus() {
+    return await this.request('/resume/status');
+  }
 }
 
 export const api = new ApiService();

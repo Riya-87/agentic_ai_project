@@ -21,6 +21,13 @@ class StudentProfileBase(BaseModel):
     bio: str = "Passionate undergraduate student enthusiastic about AI, cloud systems, and building innovative software."
     resume_summary: Optional[str] = ""
 
+    # Extended Profile Attributes
+    projects: List[dict] = Field(default_factory=list)
+    experience: List[dict] = Field(default_factory=list)
+    certifications: List[str] = Field(default_factory=list)
+    resume_filename: Optional[str] = None
+    resume_text: Optional[str] = ""
+
 class StudentProfileCreate(StudentProfileBase):
     pass
 
@@ -42,6 +49,12 @@ class StudentProfileUpdate(BaseModel):
     career_goals: Optional[str] = None
     bio: Optional[str] = None
     resume_summary: Optional[str] = None
+
+    projects: Optional[List[dict]] = None
+    experience: Optional[List[dict]] = None
+    certifications: Optional[List[str]] = None
+    resume_filename: Optional[str] = None
+    resume_text: Optional[str] = None
 
 class StudentProfileOut(StudentProfileBase):
     id: int

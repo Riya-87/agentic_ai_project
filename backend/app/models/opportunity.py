@@ -11,7 +11,8 @@ class Opportunity(Base):
     organization = Column(String(255), index=True, nullable=False)
     description = Column(Text, nullable=False)
     summary = Column(Text, default="")
-    category = Column(String(100), index=True, nullable=False)  # Hackathon, Scholarship, Internship, Research Fellowship, Competition, Grant, Conference, Student Program, Workshop
+    category = Column(String(100), index=True, nullable=False)  # Internship, Job, Hackathon, Scholarship, Research Fellowship, Competition, Grant, Conference, Student Program, Workshop, Open Source
+    domain = Column(String(100), index=True, default="General")  # Machine Learning, Web Development, Cloud, Data Science, etc.
     
     eligibility = Column(Text, default="Open to all enrolled university students.")
     deadline = Column(DateTime, index=True, nullable=True)
@@ -26,6 +27,7 @@ class Opportunity(Base):
     preferred_skills = Column(JSON, default=list) # ["PyTorch", "LangChain"]
     degree_requirements = Column(JSON, default=list) # ["B.Tech", "B.E", "B.Sc", "M.Tech"]
     academic_year_requirements = Column(JSON, default=list) # ["1st Year", "2nd Year", "3rd Year", "4th Year"]
+    experience_requirements = Column(JSON, default=list) # ["0-1 years", "Student / Entry Level"]
     tags = Column(JSON, default=list)  # ["AI", "Open Source", "Global", "Summer 2026"]
     
     # Official Canonical & Multi-Source Tracking

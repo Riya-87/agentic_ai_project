@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, UniqueConstraint, JSON
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -10,9 +10,10 @@ class SavedOpportunity(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     opportunity_id = Column(Integer, ForeignKey("opportunities.id", ondelete="CASCADE"), nullable=False)
     
-    status = Column(String(50), default="saved")  # "saved", "in_progress", "applied", "archived"
+    status = Column(String(50), default="SAVED")  # SAVED, INTERESTED, APPLIED, INTERVIEW, SELECTED, REJECTED
     notes = Column(Text, default="")
     applied_at = Column(DateTime, nullable=True)
+    stage_history = Column(JSON, default=list)  # [{"stage": "APPLIED", "timestamp": "...", "notes": "..."}]
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

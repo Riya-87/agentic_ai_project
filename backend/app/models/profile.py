@@ -28,6 +28,13 @@ class StudentProfile(Base):
     bio = Column(Text, default="Passionate undergraduate student enthusiastic about AI, cloud systems, and building innovative software.")
     resume_summary = Column(Text, default="")
     
+    # Extended Profile Attributes for 6-Factor Matching & Resume Parser
+    projects = Column(JSON, default=list)  # [{"title": "Agentic AI", "description": "...", "skills": ["Python", "FastAPI"]}]
+    experience = Column(JSON, default=list)  # [{"role": "AI Intern", "organization": "...", "duration": "3 months"}]
+    certifications = Column(JSON, default=list)  # ["Deep Learning Specialization", "AWS Cloud Practitioner"]
+    resume_filename = Column(String(255), nullable=True)
+    resume_text = Column(Text, default="")
+    
     profile_strength = Column(Integer, default=70)  # 0 to 100 percentage
     
     created_at = Column(DateTime, default=datetime.utcnow)
