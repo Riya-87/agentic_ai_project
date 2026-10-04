@@ -10,6 +10,14 @@ logger = logging.getLogger("agents.base")
 
 T = TypeVar("T", bound=BaseModel)
 
+GROQ_PREFERRED_MODELS = [
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.8-27b",
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant"
+]
+
 class BaseAgent:
     def __init__(self, name: str, role: str):
         self.name = name
@@ -17,35 +25,43 @@ class BaseAgent:
         self.groq_key = settings.GROQ_API_KEY
         self.gemini_key = settings.GEMINI_API_KEY
         self.openai_key = settings.OPENAI_API_KEY
+        self._working_groq_model = "openai/gpt-oss-120b"
 
     def call_llm_json(self, prompt: str, schema_class: Optional[Type[T]] = None, fallback_dict: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Calls Groq (Llama 3.3 70B) or Gemini LLM requesting structured JSON output.
+        Calls Groq (GPT-OSS / Llama 3.3 / Qwen) or Gemini LLM requesting structured JSON output.
         If no API key or network error occurs, seamlessly returns structured fallback data.
         """
-        # 1. Try Groq (Ultra-fast, Llama 3.3 70B with native JSON mode)
+        # 1. Try Groq
         if self.groq_key:
             try:
                 from groq import Groq
-                client = Groq(api_key=self.groq_key, max_retries=1, timeout=10.0)
+                client = Groq(api_key=self.groq_key, max_retries=0, timeout=5.0)
                 system_prompt = (
                     "You are an intelligent academic opportunities analyzer. "
                     "Respond ONLY with a valid JSON object matching the requested schema. "
                     "Do not include markdown codeblocks or explanations outside the JSON."
                 )
-                completion = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": prompt}
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.1,
-                    max_tokens=2048
-                )
-                raw_content = completion.choices[0].message.content or "{}"
-                cleaned = self._clean_json_string(raw_content)
-                return json.loads(cleaned)
+                candidate_models = [self._working_groq_model] + [m for m in GROQ_PREFERRED_MODELS if m != self._working_groq_model]
+                for m in candidate_models:
+                    try:
+                        completion = client.chat.completions.create(
+                            model=m,
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=0.1,
+                            max_tokens=2048
+                        )
+                        raw_content = completion.choices[0].message.content or "{}"
+                        cleaned = self._clean_json_string(raw_content)
+                        parsed = json.loads(cleaned)
+                        self._working_groq_model = m
+                        return parsed
+                    except Exception as e:
+                        logger.debug(f"[{self.name}] Groq model '{m}' failed: {e}")
+                        continue
             except Exception as e:
                 logger.warning(f"[{self.name}] Groq JSON call failed: {e}. Trying secondary LLM.")
 
@@ -85,23 +101,29 @@ class BaseAgent:
         """
         Calls Groq or Gemini LLM for freeform textual synthesis.
         """
-        # 1. Try Groq (Llama 3.3 70B)
+        # 1. Try Groq
         if self.groq_key:
             try:
                 from groq import Groq
-                client = Groq(api_key=self.groq_key, max_retries=1, timeout=10.0)
-                completion = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=[
-                        {"role": "system", "content": "You are an intelligent, helpful academic and career advisor assistant."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=2048
-                )
-                text = completion.choices[0].message.content
-                if text:
-                    return text.strip()
+                client = Groq(api_key=self.groq_key, max_retries=0, timeout=5.0)
+                candidate_models = [self._working_groq_model] + [m for m in GROQ_PREFERRED_MODELS if m != self._working_groq_model]
+                for m in candidate_models:
+                    try:
+                        completion = client.chat.completions.create(
+                            model=m,
+                            messages=[
+                                {"role": "system", "content": "You are an intelligent, helpful academic and career advisor assistant."},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=0.3,
+                            max_tokens=2048
+                        )
+                        text = completion.choices[0].message.content
+                        if text:
+                            self._working_groq_model = m
+                            return text.strip()
+                    except Exception as e:
+                        continue
             except Exception as e:
                 logger.warning(f"[{self.name}] Groq text call failed: {e}. Trying Gemini.")
 
