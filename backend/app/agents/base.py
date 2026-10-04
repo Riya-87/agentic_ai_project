@@ -27,7 +27,7 @@ class BaseAgent:
         if self.groq_key:
             try:
                 from groq import Groq
-                client = Groq(api_key=self.groq_key)
+                client = Groq(api_key=self.groq_key, max_retries=1, timeout=10.0)
                 system_prompt = (
                     "You are an intelligent academic opportunities analyzer. "
                     "Respond ONLY with a valid JSON object matching the requested schema. "
@@ -89,7 +89,7 @@ class BaseAgent:
         if self.groq_key:
             try:
                 from groq import Groq
-                client = Groq(api_key=self.groq_key)
+                client = Groq(api_key=self.groq_key, max_retries=1, timeout=10.0)
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[
